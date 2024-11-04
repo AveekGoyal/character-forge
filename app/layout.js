@@ -3,6 +3,7 @@ import "./globals.css";
 import { headers } from "next/headers";
 import ContextProvider from "@/context";
 import { ThemeProvider } from "next-themes";
+import { Toaster } from "@/components/ui/sonner";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -19,7 +20,7 @@ export default function RootLayout({ children }) {
       <body className={inter.className}>
         <ThemeProvider
           attribute="class"
-          defaultTheme="system"
+          defaultTheme="dark"
           enableSystem
           disableTransitionOnChange
         >
@@ -40,6 +41,7 @@ export default function RootLayout({ children }) {
           <span dangerouslySetInnerHTML={{ __html: "&#129504;" }} />
           &nbsp; at ForkLabs
         </div>
+        <Toaster position="top-right" />
       </body>
     </html>
   );

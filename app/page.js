@@ -4,9 +4,11 @@ import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
 import { Sword, Brain, Heart, Zap } from "lucide-react";
+import { RainbowButton } from "@/components/ui/rainbow-button";
+import { NeonGradientCard } from "@/components/ui/neon-gradient-card";
 import Image from "next/image";
+import { toast } from "sonner";
 
-// Stats Component
 const StatDisplay = ({ icon: Icon, label, value, color }) => (
   <div className="bg-white/10 rounded-lg p-2 text-center transform transition-transform hover:scale-105">
     <div className="flex justify-center mb-1">
@@ -17,7 +19,6 @@ const StatDisplay = ({ icon: Icon, label, value, color }) => (
   </div>
 );
 
-// Enhanced 3D Card Component
 const Card3D = () => {
   const x = useMotionValue(0);
   const y = useMotionValue(0);
@@ -57,68 +58,67 @@ const Card3D = () => {
         rotateX,
         transformStyle: "preserve-3d",
       }}
-      className="relative w-72 h-[450px] rounded-xl bg-gradient-to-br from-violet-500 via-purple-500 to-blue-500 shadow-2xl"
+      className="relative w-72 h-[450px] rounded-xl"
     >
-      <div
-        style={{
-          transform: "translateZ(75px)",
-          transformStyle: "preserve-3d",
-        }}
-        className="absolute inset-4 rounded-xl bg-black/90 p-4 flex flex-col items-center justify-between"
-      >
-        {/* Image Container */}
+      <NeonGradientCard className="absolute inset-0">
         <div
-          className="w-full h-48 relative rounded-lg overflow-hidden mb-4"
-          style={{ transform: "translateZ(50px)" }}
+          style={{
+            transform: "translateZ(75px)",
+            transformStyle: "preserve-3d",
+          }}
+          className="absolute inset-4 rounded-xl bg-black/90 p-4 flex flex-col items-center justify-between"
         >
-          <Image
-            src="/char.gif"
-            alt="Character Animation"
-            fill
-            style={{ objectFit: "cover" }}
-            priority
-          />
-        </div>
+          <div
+            className="w-full h-48 relative rounded-lg overflow-hidden mb-4"
+            style={{ transform: "translateZ(50px)" }}
+          >
+            <Image
+              src="/char.gif"
+              alt="Character Animation"
+              fill
+              style={{ objectFit: "cover" }}
+              priority
+            />
+          </div>
 
-        {/* Title */}
-        <div
-          className="text-white text-xl font-bold mb-4"
-          style={{ transform: "translateZ(25px)" }}
-        >
-          Master Baiter #1337
-        </div>
+          <div
+            className="text-white text-xl font-bold mb-4"
+            style={{ transform: "translateZ(25px)" }}
+          >
+            Master Baiter #1337
+          </div>
 
-        {/* Stats Grid */}
-        <div
-          className="grid grid-cols-2 gap-2 w-full"
-          style={{ transform: "translateZ(25px)" }}
-        >
-          <StatDisplay
-            icon={Sword}
-            label="STR"
-            value={85}
-            color="text-red-400"
-          />
-          <StatDisplay
-            icon={Zap}
-            label="DEX"
-            value={92}
-            color="text-yellow-400"
-          />
-          <StatDisplay
-            icon={Brain}
-            label="INT"
-            value={78}
-            color="text-blue-400"
-          />
-          <StatDisplay
-            icon={Heart}
-            label="VIT"
-            value={88}
-            color="text-green-400"
-          />
+          <div
+            className="grid grid-cols-2 gap-2 w-full"
+            style={{ transform: "translateZ(25px)" }}
+          >
+            <StatDisplay
+              icon={Sword}
+              label="STR"
+              value={85}
+              color="text-red-400"
+            />
+            <StatDisplay
+              icon={Zap}
+              label="DEX"
+              value={92}
+              color="text-yellow-400"
+            />
+            <StatDisplay
+              icon={Brain}
+              label="INT"
+              value={78}
+              color="text-blue-400"
+            />
+            <StatDisplay
+              icon={Heart}
+              label="VIT"
+              value={88}
+              color="text-green-400"
+            />
+          </div>
         </div>
-      </div>
+      </NeonGradientCard>
     </motion.div>
   );
 };
@@ -238,21 +238,19 @@ function ConnectButton() {
   const [isConnected, setIsConnected] = useState(false);
 
   useEffect(() => {
-    // Check if window.ethereum exists
     if (typeof window !== "undefined" && window.ethereum) {
-      // Check if already connected
       window.ethereum.request({ method: "eth_accounts" }).then((accounts) => {
         if (accounts.length > 0) {
           setIsConnected(true);
-          router.push("/app/home");
+          toast.success("Connected to MetaMask");
+          router.push("/home");
         }
       });
 
-      // Listen for account changes
       window.ethereum.on("accountsChanged", (accounts) => {
         if (accounts.length > 0) {
           setIsConnected(true);
-          router.push("/app/home");
+          router.push("/home");
         } else {
           setIsConnected(false);
         }
@@ -260,7 +258,19 @@ function ConnectButton() {
     }
   }, [router]);
 
-  return <w3m-button />;
+  const handleConnect = async () => {
+    try {
+      await window.ethereum.request({ method: "eth_requestAccounts" });
+    } catch (error) {
+      console.error("Failed to connect:", error);
+    }
+  };
+
+  return (
+    <RainbowButton onClick={handleConnect} className="text-lg text-black">
+      Connect Wallet
+    </RainbowButton>
+  );
 }
 
 export default function Home() {

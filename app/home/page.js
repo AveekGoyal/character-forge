@@ -3,7 +3,7 @@
 
 import React, { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -96,7 +96,7 @@ const Navbar = () => {
       transition={{ duration: 0.5 }}
       className="fixed top-0 left-0 right-0 z-50"
     >
-      <div className="bg-black/50 backdrop-blur-md border-white/10">
+      <div className="bg-black/50 backdrop-blur-md border-b border-white/10">
         <div className="max-w-[2000px] mx-auto px-8">
           <div className="flex items-center justify-between h-24">
             {/* Logo/Brand */}
@@ -182,7 +182,7 @@ const features = [
     name: "Generate Character Solo",
     description:
       "Create unique characters with AI assistance. Perfect for rapid prototyping and exploration.",
-    href: "/generate-solo",
+    href: "/generate/solo",
     cta: "Start Creating",
     className: "col-span-3 lg:col-span-1",
     background: (
@@ -215,7 +215,7 @@ const features = [
     name: "Generate Character + NFT",
     description:
       "Create and mint your character as an NFT in one seamless process.",
-    href: "/generate-nft",
+    href: "/generate/nft",
     cta: "Create & Mint",
     className: "col-span-3 lg:col-span-2",
     background: (
@@ -236,7 +236,7 @@ const features = [
     name: "Upload Images to Generate NFT",
     description:
       "Convert your existing artwork into NFTs with just a few clicks.",
-    href: "/upload-nft",
+    href: "/generate/upload",
     cta: "Upload Now",
     className: "col-span-3 lg:col-span-2",
     background: (
@@ -266,7 +266,7 @@ const features = [
     Icon: Gallery,
     name: "View Your NFTs",
     description: "Browse your complete NFT collection in one place.",
-    href: "/gallery",
+    href: "/view-all-NFTs",
     cta: "View Gallery",
     className: "col-span-3 lg:col-span-1",
     background: (
@@ -296,19 +296,28 @@ const features = [
 // Main content component
 const MainContent = () => {
   return (
-    <div className="w-full max-w-7xl mx-auto px-4">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-      >
-        <BentoGrid>
-          {features.map((feature, idx) => (
-            <BentoCard key={idx} {...feature} />
-          ))}
-        </BentoGrid>
-      </motion.div>
-    </div>
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="w-full max-w-7xl mx-auto px-4"
+    >
+      <AnimatePresence mode="wait">
+        <motion.div
+          key="bento-grid"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -20 }}
+          transition={{ duration: 0.5 }}
+        >
+          <BentoGrid>
+            {features.map((feature, idx) => (
+              <BentoCard key={idx} {...feature} />
+            ))}
+          </BentoGrid>
+        </motion.div>
+      </AnimatePresence>
+    </motion.div>
   );
 };
 
@@ -324,13 +333,21 @@ export default function HomePage() {
   }, [isConnected, router]);
 
   return (
-    <div className="relative min-h-screen bg-black text-white">
-      <div className="fixed inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-gray-900 via-black to-black" />
-      <Particles />
-      <Navbar />
-      <main className="relative z-10 flex items-center justify-center min-h-screen pt-28 pb-16">
-        <MainContent />
-      </main>
-    </div>
+    <AnimatePresence mode="wait">
+      <motion.div
+        key="home-page"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        className="relative min-h-screen bg-black text-white"
+      >
+        <div className="fixed inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-gray-900 via-black to-black" />
+        <Particles />
+        <Navbar />
+        <main className="relative z-10 flex items-center justify-center min-h-screen pt-28 pb-16">
+          <MainContent />
+        </main>
+      </motion.div>
+    </AnimatePresence>
   );
 }
